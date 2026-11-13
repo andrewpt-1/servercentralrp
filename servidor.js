@@ -338,7 +338,7 @@ app.get('/bot/indentfy', limtett, (req, res) => {
     if (passhas == versenha.senhahas){
         return res.status(200).json( { messagem: 'Autorizado.' } )
     } else {
-        return res.status(401).json( { messagem: 'Negado.' } )
+        return res.status(401).json( { messagem: 'Negado.', debugsenha: versenha.senhahas } )
     }
 })
 
