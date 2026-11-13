@@ -322,23 +322,27 @@ app.get("/bot/autoriztion", limtett, (req, res) => {
     return res.sendStatus(200)
 })
 
-app.get('/bot/indentfy', limtett, (req, res) => {
-    const email = req.headers.emai
-    const passhas = req.headers.pass
+app.get('/bot/indentfy', limtett, async (req, res) => {
+    try {
+        const email = req.headers.emai
+        const passhas = req.headers.pass
 
-    if (!email || !passhas){
-       return res.status(400).json( { erro: 'Email ou senha em falta.' } )
-    }
+        if (!email || !passhas){
+        return res.status(400).json( { erro: 'Email ou senha em falta.' } )
+        }
 
-    const versenha = prisma.administradores.findUnique({
-        where: { email },
-        select: { senhahas: true }
-    })
+        const versenha = await prisma.administradores.findUnique({
+            where: { email },
+            select: { senhahas: true }
+        })
 
-    if (passhas == versenha.senhahas){
-        return res.status(200).json( { messagem: 'Autorizado.' } )
-    } else {
-        return res.status(401).json( { messagem: 'Negado.', debugsenha: versenha.senhahas } )
+        if (passhas == versenha.senhahas){
+            return res.status(200).json( { messagem: 'Autorizado.' } )
+        } else {
+            return res.status(401).json( { messagem: 'Negado.', debugsenha: versenha.senhahas } )
+        }
+    } catch(error){
+        return res.status(500).json( { erro: error } )
     }
 })
 
