@@ -24,6 +24,14 @@ app.use(express.urlencoded({ extended: true }));
 
 const MASTERKEY = process.env.MASTER_KEY
 
+function adminkey(){
+    const key =  req.headers.key
+
+    if(!key){
+        return res.status(401)
+    }
+}
+
 
 const CARACTERES = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
@@ -284,6 +292,10 @@ app.get('/bot/basededados/scm', limtett, async (req, res) => {
     try{
 
         const iddobot = req.headers.userid
+
+        if(!iddobot){
+            return res.status(401)
+        }
     
         const user = await prisma.administradores.findUnique({
             where: {
@@ -291,13 +303,12 @@ app.get('/bot/basededados/scm', limtett, async (req, res) => {
             }
         })
 
-        res.json(user)
+        return res.json(user).status(200)
     }
     catch(error){
         console.log(error)
     }
     
-
 })
 
 
@@ -309,6 +320,32 @@ app.get("/bot/autoriztion", limtett, (req, res) => {
     }
 
     return res.sendStatus(200)
+})
+
+app.get('/bot/indentfy', limtett, (req, res) => {
+    const email = req.headers.emai
+    const passhas = req.headers.pass
+
+    if (!email || !passhas){
+       return res.status(400).json( { erro: 'Email ou senha em falta.' } )
+    }
+
+    const versenha = prisma.administradores.findUnique({
+        where: { email },
+        select: { senhahas: true }
+    })
+
+    if (passhas == versenha.senhahas){
+        return res.status(200).json( { messagem: 'Autorizado.' } )
+    } else {
+        return res.status(401).json( { messagem: 'Negado.' } )
+    }
+})
+
+app.get('/api/loja', limtett, async (req, res) => {
+    const produtos = await prisma.loja.findUnique({
+        
+    })
 })
 
 
